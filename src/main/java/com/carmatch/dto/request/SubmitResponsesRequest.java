@@ -2,19 +2,16 @@ package com.carmatch.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 import java.util.List;
 
-@Getter
-@Setter
 public class SubmitResponsesRequest {
 
     @NotNull(message = "Responses are required")
     private List<QuestionAnswer> responses;
 
-    @Getter
-    @Setter
+    public List<QuestionAnswer> getResponses() { return responses; }
+    public void setResponses(List<QuestionAnswer> responses) { this.responses = responses; }
+
     public static class QuestionAnswer {
 
         @NotBlank(message = "Question key is required")
@@ -22,5 +19,11 @@ public class SubmitResponsesRequest {
 
         @NotBlank(message = "Answer is required")
         private String answerValue;
+
+        public String getQuestionKey() { return questionKey; }
+        public void setQuestionKey(String questionKey) { this.questionKey = questionKey; }
+
+        public String getAnswerValue() { return answerValue; }
+        public void setAnswerValue(String answerValue) { this.answerValue = answerValue; }
     }
 }

@@ -1,15 +1,9 @@
 package com.carmatch.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 
 @Entity
 @Table(name = "suggestions")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Suggestion extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,4 +22,21 @@ public class Suggestion extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String reasoning;
+
+    public Suggestion() {}
+
+    public Session getSession() { return session; }
+    public void setSession(Session session) { this.session = session; }
+
+    public Car getCar() { return car; }
+    public void setCar(Car car) { this.car = car; }
+
+    public Double getScore() { return score; }
+    public void setScore(Double score) { this.score = score; }
+
+    public Integer getRankPosition() { return rankPosition; }
+    public void setRankPosition(Integer rankPosition) { this.rankPosition = rankPosition; }
+
+    public String getReasoning() { return reasoning; }
+    public void setReasoning(String reasoning) { this.reasoning = reasoning; }
 }

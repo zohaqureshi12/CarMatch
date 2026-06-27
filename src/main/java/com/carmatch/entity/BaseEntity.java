@@ -1,14 +1,10 @@
 package com.carmatch.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @MappedSuperclass
 public abstract class BaseEntity {
 
@@ -25,4 +21,10 @@ public abstract class BaseEntity {
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
+
+    public Long getId() { return id; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
 }
