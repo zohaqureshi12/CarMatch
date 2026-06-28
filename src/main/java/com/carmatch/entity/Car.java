@@ -43,6 +43,8 @@ public class Car extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CarStatus status = CarStatus.PENDING;
@@ -83,6 +85,9 @@ public class Car extends BaseEntity {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public CarStatus getStatus() { return status; }
     public void setStatus(CarStatus status) { this.status = status; }

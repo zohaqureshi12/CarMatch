@@ -39,6 +39,7 @@ public class CreateCarRequest {
 
     private Double mileage;
     private String description;
+    private String imageUrl;
 
     public String getBrand() { return brand; }
     public void setBrand(String brand) { this.brand = brand; }
@@ -72,4 +73,7 @@ public class CreateCarRequest {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

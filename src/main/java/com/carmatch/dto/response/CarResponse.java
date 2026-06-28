@@ -17,6 +17,7 @@ public class CarResponse {
     private UsageType usageType;
     private Double mileage;
     private String description;
+    private String imageUrl;
     private CarStatus status;
     private LocalDateTime createdAt;
 
@@ -55,6 +56,9 @@ public class CarResponse {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     public CarStatus getStatus() { return status; }
     public void setStatus(CarStatus status) { this.status = status; }
