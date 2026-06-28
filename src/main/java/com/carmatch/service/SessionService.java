@@ -43,14 +43,18 @@ public class SessionService {
         response.setStatus(session.getStatus());
         response.setStartedAt(session.getStartedAt());
         response.setCompletedAt(session.getCompletedAt());
-        response.setResponseCount(
-                session.getResponses() != null ? session.getResponses().size() : 0);
+
+        // Load counts fresh from DB to avoid lazy loading issues
+        List<UserResponse> responses =
+                userResponseRepository.findBySessionId(session.getId());
+        response.setResponseCount(responses.size());
+
         response.setSwipeCount(
                 session.getSwipes() != null ? session.getSwipes().size() : 0);
         return response;
     }
 
-    //  Get 6 Questions
+    // ── Get 6 Questions ───────────────────────────────────────────
     public List<Map<String, Object>> getQuestions() {
         List<Map<String, Object>> questions = new ArrayList<>();
 
@@ -84,7 +88,7 @@ public class SessionService {
         return question;
     }
 
-    //  Start Session
+    // ── Start Session ─────────────────────────────────────────────
     public SessionResponse startSession() {
         User user = getCurrentUser();
 
@@ -103,7 +107,7 @@ public class SessionService {
         return mapToSessionResponse(session);
     }
 
-    // Submit Responses
+    // ── Submit Responses ──────────────────────────────────────────
     public SessionResponse submitResponses(
             Long sessionId, SubmitResponsesRequest request) {
 
@@ -135,10 +139,14 @@ public class SessionService {
             userResponseRepository.save(response);
         }
 
-        return mapToSessionResponse(session);
+        // Reload session fresh from DB so counts are accurate
+        Session updatedSession = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Session not found with id: " + sessionId));
+        return mapToSessionResponse(updatedSession);
     }
 
-    //  Get Session
+    // ── Get Session ───────────────────────────────────────────────
     public SessionResponse getSession(Long sessionId) {
         User user = getCurrentUser();
 

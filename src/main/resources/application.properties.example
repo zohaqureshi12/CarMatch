@@ -3,8 +3,8 @@ server.port=8080
 
 # Database
 spring.datasource.url=jdbc:mysql://localhost:3306/carmatch_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=root
-spring.datasource.password=Hello123
+spring.datasource.username=YOUR_DB_USERNAME
+spring.datasource.password=YOUR_DB_PASSWORD
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # JPA / Hibernate
@@ -14,12 +14,13 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 # JWT
-jwt.secret=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+jwt.secret=YOUR_JWT_SECRET_HERE
 jwt.expiration=86400000
 
 # Swagger
 springdoc.api-docs.path=/api-docs
 springdoc.swagger-ui.path=/swagger-ui.html
 
+# Jackson date format
 spring.jackson.serialization.write-dates-as-timestamps=false
 spring.mvc.format.date-time=dd-MM-yyyy HH:mm:ss
