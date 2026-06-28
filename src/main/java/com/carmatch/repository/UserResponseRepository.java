@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface UserResponseRepository extends JpaRepository<UserResponse, Long> {
     List<UserResponse> findBySessionId(Long sessionId);
+    void deleteBySessionId(Long sessionId);
 }
