@@ -61,6 +61,8 @@ public class CarService {
         response.setCarType(car.getCarType());
         response.setSeatingCapacity(car.getSeatingCapacity());
         response.setStatus(car.getStatus());
+        response.setImageUrl(car.getImageUrl());
+        response.setIsDeleted(car.getIsDeleted());
         return response;
     }
 

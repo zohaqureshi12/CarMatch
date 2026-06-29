@@ -63,7 +63,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
+        // Log the real error internally so we can debug it
+        System.err.println("Unexpected error: " + ex.getMessage());
+        ex.printStackTrace();
+        // Return safe generic message to client — never expose internals
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error("Something went wrong: " + ex.getMessage()));
+                .body(ApiResponse.error("An internal error occurred. Please try again."));
     }
 }

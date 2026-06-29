@@ -14,6 +14,8 @@ public class CarSummaryResponse {
     private CarType carType;
     private Integer seatingCapacity;
     private CarStatus status;
+    private String imageUrl;
+    private Boolean isDeleted;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -44,4 +46,10 @@ public class CarSummaryResponse {
 
     public CarStatus getStatus() { return status; }
     public void setStatus(CarStatus status) { this.status = status; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public Boolean getIsDeleted() { return isDeleted; }
+    public void setIsDeleted(Boolean isDeleted) { this.isDeleted = isDeleted; }
 }

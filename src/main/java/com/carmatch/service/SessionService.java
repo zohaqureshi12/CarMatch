@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionService {
@@ -111,26 +112,48 @@ public class SessionService {
     public SessionResponse submitResponses(
             Long sessionId, SubmitResponsesRequest request) {
 
+        // 1. Get current user FIRST
         User user = getCurrentUser();
 
-        Session session = sessionRepository.findById(sessionId)
+        // 2. Find session and verify ownership
+        Session session = sessionRepository.findByIdAndUserId(sessionId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));
 
-        if (!session.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Session not found");
-        }
-
+        // 3. Check session is active
         if (session.getStatus() != SessionStatus.ACTIVE) {
             throw new SessionAlreadyActiveException(
                     "This session is already completed");
         }
 
-        // Delete existing responses if resubmitting
+        // 4. Validate exactly 6 responses
+        if (request.getResponses().size() != 6) {
+            throw new SessionAlreadyActiveException(
+                    "You must answer exactly 6 questions. Received: "
+                            + request.getResponses().size());
+        }
+
+        // 5. Validate all required keys present
+        List<String> requiredKeys = List.of(
+                "budget", "fuel_type", "car_type", "seating", "usage", "transmission");
+
+        List<String> submittedKeys = request.getResponses()
+                .stream()
+                .map(SubmitResponsesRequest.QuestionAnswer::getQuestionKey)
+                .collect(Collectors.toList());
+
+        for (String key : requiredKeys) {
+            if (!submittedKeys.contains(key)) {
+                throw new SessionAlreadyActiveException(
+                        "Missing answer for question: " + key);
+            }
+        }
+
+        // 6. Delete existing responses if resubmitting
         userResponseRepository.deleteAll(
                 userResponseRepository.findBySessionId(sessionId));
 
-        // Save new responses
+        // 7. Save new responses
         for (SubmitResponsesRequest.QuestionAnswer qa : request.getResponses()) {
             UserResponse response = new UserResponse();
             response.setSession(session);
@@ -139,24 +162,19 @@ public class SessionService {
             userResponseRepository.save(response);
         }
 
-        // Reload session fresh from DB so counts are accurate
+        // 8. Reload session fresh from DB
         Session updatedSession = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));
         return mapToSessionResponse(updatedSession);
     }
-
     // ── Get Session ───────────────────────────────────────────────
     public SessionResponse getSession(Long sessionId) {
         User user = getCurrentUser();
 
-        Session session = sessionRepository.findById(sessionId)
+        Session session = sessionRepository.findByIdAndUserId(sessionId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));
-
-        if (!session.getUser().getId().equals(user.getId())) {
-            throw new ResourceNotFoundException("Session not found");
-        }
 
         return mapToSessionResponse(session);
     }
