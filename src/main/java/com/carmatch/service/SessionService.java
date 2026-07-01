@@ -55,7 +55,7 @@ public class SessionService {
         return response;
     }
 
-    // ── Get 6 Questions ───────────────────────────────────────────
+
     public List<Map<String, Object>> getQuestions() {
         List<Map<String, Object>> questions = new ArrayList<>();
 
@@ -89,7 +89,7 @@ public class SessionService {
         return question;
     }
 
-    // ── Start Session ─────────────────────────────────────────────
+
     public SessionResponse startSession() {
         User user = getCurrentUser();
 
@@ -108,38 +108,37 @@ public class SessionService {
         return mapToSessionResponse(session);
     }
 
-    // ── Submit Responses ──────────────────────────────────────────
+
     public SessionResponse submitResponses(
             Long sessionId, SubmitResponsesRequest request) {
 
-        // 1. Get current user FIRST
         User user = getCurrentUser();
 
-        // 2. Find session and verify ownership
+        //
         Session session = sessionRepository.findByIdAndUserId(sessionId, user.getId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));
 
-        // 3. Check session is active
+
         if (session.getStatus() != SessionStatus.ACTIVE) {
             throw new SessionAlreadyActiveException(
                     "This session is already completed");
         }
 
-        // 4. Validate exactly 6 responses
+
         if (request.getResponses().size() != 6) {
             throw new SessionAlreadyActiveException(
                     "You must answer exactly 6 questions. Received: "
                             + request.getResponses().size());
         }
 
-        // 5. Validate all required keys present
+
         List<String> requiredKeys = List.of(
                 "budget", "fuel_type", "car_type", "seating", "usage", "transmission");
 
         List<String> submittedKeys = request.getResponses()
                 .stream()
-                .map(SubmitResponsesRequest.QuestionAnswer::getQuestionKey)
+                .map(qa -> qa.getQuestionKey())
                 .collect(Collectors.toList());
 
         for (String key : requiredKeys) {
@@ -149,11 +148,11 @@ public class SessionService {
             }
         }
 
-        // 6. Delete existing responses if resubmitting
+        // Delete existing responses if resubmitting
         userResponseRepository.deleteAll(
                 userResponseRepository.findBySessionId(sessionId));
 
-        // 7. Save new responses
+
         for (SubmitResponsesRequest.QuestionAnswer qa : request.getResponses()) {
             UserResponse response = new UserResponse();
             response.setSession(session);
@@ -162,13 +161,13 @@ public class SessionService {
             userResponseRepository.save(response);
         }
 
-        // 8. Reload session fresh from DB
+        // Reload session fresh from DB
         Session updatedSession = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));
         return mapToSessionResponse(updatedSession);
     }
-    // ── Get Session ───────────────────────────────────────────────
+
     public SessionResponse getSession(Long sessionId) {
         User user = getCurrentUser();
 

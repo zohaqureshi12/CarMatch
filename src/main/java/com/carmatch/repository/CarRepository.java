@@ -26,7 +26,7 @@ public interface CarRepository extends JpaRepository<Car, Long> {
             "AND (:minPrice IS NULL OR c.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR c.price <= :maxPrice) " +
             "AND (:seats IS NULL OR c.seatingCapacity >= :seats)")
-    Page<Car> searchCars(
+            Page<Car> searchCars(
             @Param("keyword") String keyword,
             @Param("fuelType") FuelType fuelType,
             @Param("carType") CarType carType,

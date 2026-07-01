@@ -1,12 +1,15 @@
 package com.carmatch.dto.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class SubmitResponsesRequest {
 
-    @NotNull(message = "Responses are required")
+    @Valid
+    @NotEmpty(message = "Responses cannot be empty")
     private List<QuestionAnswer> responses;
 
     public List<QuestionAnswer> getResponses() { return responses; }
