@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.carmatch.dto.request.ResendOtpRequest;
+import com.carmatch.dto.request.VerifyOtpRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -38,5 +40,24 @@ public class AuthController {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(
                 ApiResponse.success("Login successful", response));
+    }
+    @PostMapping("/verify-otp")
+    @Operation(summary = "Verify email using OTP sent during registration")
+    public ResponseEntity<ApiResponse<String>> verifyOtp(
+            @Valid @RequestBody VerifyOtpRequest request) {
+
+        String message = authService.verifyOtp(request);
+        return ResponseEntity.ok(
+                ApiResponse.success(message, null));
+    }
+
+    @PostMapping("/resend-otp")
+    @Operation(summary = "Resend OTP if the previous one expired")
+    public ResponseEntity<ApiResponse<String>> resendOtp(
+            @Valid @RequestBody ResendOtpRequest request) {
+
+        String message = authService.resendOtp(request);
+        return ResponseEntity.ok(
+                ApiResponse.success(message, null));
     }
 }

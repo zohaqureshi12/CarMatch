@@ -24,6 +24,19 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private Boolean isActive = true;
 
+    private Boolean isEmailVerified = false;
+    private String otp;
+    private java.time.LocalDateTime otpExpiry;
+
+    public Boolean getIsEmailVerified() { return isEmailVerified; }
+    public void setIsEmailVerified(Boolean isEmailVerified) { this.isEmailVerified = isEmailVerified; }
+
+    public String getOtp() { return otp; }
+    public void setOtp(String otp) { this.otp = otp; }
+
+    public java.time.LocalDateTime getOtpExpiry() { return otpExpiry; }
+    public void setOtpExpiry(java.time.LocalDateTime otpExpiry) { this.otpExpiry = otpExpiry; }
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Session> sessions;
 
