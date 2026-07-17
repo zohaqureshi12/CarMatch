@@ -89,7 +89,7 @@ public class HistoryService {
         return response;
     }
 
-    // ── All Sessions for Current User ──────────────────────────────
+    // All Sessions for Current User
     public List<SessionResponse> getAllSessions() {
         User user = getCurrentUser();
 
@@ -100,7 +100,7 @@ public class HistoryService {
                 .collect(Collectors.toList());
     }
 
-    // ── Full Detail of One Session ─────────────────────────────────
+    // Full Detail of One Session
     public Map<String, Object> getSessionDetail(Long sessionId) {
         User user = getCurrentUser();
 
@@ -138,7 +138,7 @@ public class HistoryService {
         return detail;
     }
 
-    // ── All Suggestions Across All Sessions ────────────────────────
+    // All Suggestions Across All Sessions
     public List<SuggestionResponse> getAllSuggestions() {
         User user = getCurrentUser();
 

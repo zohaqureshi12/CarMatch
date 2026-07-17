@@ -55,7 +55,7 @@ public class SwipeService {
         return response;
     }
 
-    // ── Record a Swipe ────────────────────────────────────────────
+    // Record a Swipe
     public SwipeResponse recordSwipe(Long sessionId, SwipeRequest request) {
 
         // 1. Get current user
@@ -106,7 +106,7 @@ public class SwipeService {
         return mapToSwipeResponse(swipe);
     }
 
-    // ── Get All Swipes for a Session ──────────────────────────────
+    // Get All Swipes for a Session
     public List<SwipeResponse> getSwipes(Long sessionId) {
 
         User user = getCurrentUser();

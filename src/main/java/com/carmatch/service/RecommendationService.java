@@ -36,12 +36,12 @@ public class RecommendationService {
     @Autowired
     private CarService carService;
 
-    // Maximum possible score — used to calculate percentage
+
     private static final double MAX_SCORE = 115.0;
 
     public List<RecommendationResponse> getRecommendations(Long sessionId) {
 
-        // 1. Verify current user owns this session
+
         String email = SecurityContextHolder.getContext()
                 .getAuthentication().getName();
 
@@ -52,7 +52,7 @@ public class RecommendationService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));
 
-        // 2. Load user's answers for this session
+
         List<UserResponse> responses =
                 userResponseRepository.findBySessionId(sessionId);
 
@@ -62,14 +62,13 @@ public class RecommendationService {
                             + ". Please submit your questionnaire answers first.");
         }
 
-        // 3. Convert responses to a map for easy lookup
-        // e.g. { "fuel_type" -> "PETROL", "budget" -> "600K_TO_1M" }
+
         Map<String, String> answerMap = responses.stream()
                 .collect(Collectors.toMap(
                         UserResponse::getQuestionKey,
                         UserResponse::getAnswerValue));
 
-        // 4. Load all approved non-deleted cars
+
         List<Car> allCars = carRepository
                 .findByStatusAndIsDeletedFalse(CarStatus.APPROVED);
 
@@ -78,7 +77,7 @@ public class RecommendationService {
                     "No approved cars available for recommendation.");
         }
 
-        // 5. Score every car, sort by score, return top 20
+
         return allCars.stream()
                 .map(car -> scoreCar(car, answerMap))
                 .sorted(Comparator.comparingDouble(
@@ -87,14 +86,14 @@ public class RecommendationService {
                 .collect(Collectors.toList());
     }
 
-    // ── Scoring Algorithm ─────────────────────────────────────────
+    // Scoring Algorithm
     private RecommendationResponse scoreCar(
             Car car, Map<String, String> answers) {
 
         double score = 0;
         List<String> matchedCriteria = new ArrayList<>();
 
-        // ── 1. Budget (30 points) ─────────────────────────────────
+        // 1. Budget (30 points)
         String budget = answers.getOrDefault("budget", "");
         double price = car.getPrice();
 
@@ -110,7 +109,7 @@ public class RecommendationService {
             matchedCriteria.add("Budget match");
         }
 
-        // ── 2. Fuel Type (25 points) ──────────────────────────────
+        // 2. Fuel Type (25 points)
         String fuelPref = answers.getOrDefault("fuel_type", "NO_PREFERENCE");
         if (fuelPref.equals("NO_PREFERENCE") ||
                 fuelPref.equals(car.getFuelType().name())) {
@@ -118,7 +117,7 @@ public class RecommendationService {
             matchedCriteria.add("Fuel type: " + car.getFuelType().name());
         }
 
-        // ── 3. Car Type (20 points) ───────────────────────────────
+        // 3. Car Type (20 points)
         String carTypePref = answers.getOrDefault("car_type", "NO_PREFERENCE");
         if (carTypePref.equals("NO_PREFERENCE") ||
                 carTypePref.equals(car.getCarType().name())) {
@@ -126,7 +125,7 @@ public class RecommendationService {
             matchedCriteria.add("Car type: " + car.getCarType().name());
         }
 
-        // ── 4. Seating Capacity (15 points) ───────────────────────
+        // 4. Seating Capacity (15 points)
         String seatingPref = answers.getOrDefault("seating", "");
         int requiredSeats = 0;
         switch (seatingPref) {
@@ -141,14 +140,14 @@ public class RecommendationService {
             matchedCriteria.add("Seating: " + car.getSeatingCapacity() + " seats");
         }
 
-        // ── 5. Usage Type (10 points) ─────────────────────────────
+        //5. Usage Type (10 points)
         String usagePref = answers.getOrDefault("usage", "");
         if (usagePref.equals(car.getUsageType().name())) {
             score += 10;
             matchedCriteria.add("Usage: " + car.getUsageType().name());
         }
 
-        // ── 6. Transmission (10 points) ───────────────────────────
+        // 6. Transmission (10 points)
         String transPref = answers.getOrDefault("transmission", "NO_PREFERENCE");
         if (transPref.equals("NO_PREFERENCE") ||
                 transPref.equals(car.getTransmission().name())) {
@@ -156,14 +155,14 @@ public class RecommendationService {
             matchedCriteria.add("Transmission: " + car.getTransmission().name());
         }
 
-        // ── 7. Recency Bonus (5 points) ───────────────────────────
+        // 7. Recency Bonus (5 points)
         int currentYear = LocalDate.now().getYear();
         if (car.getYear() >= currentYear - 3) {
             score += 5;
             matchedCriteria.add("Recent model: " + car.getYear());
         }
 
-        // ── Build Response ────────────────────────────────────────
+        //Build Response
         RecommendationResponse response = new RecommendationResponse();
         response.setCar(carService.mapToCarSummaryResponse(car));
         response.setScore(score);

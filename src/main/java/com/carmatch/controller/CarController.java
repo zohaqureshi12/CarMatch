@@ -6,6 +6,7 @@ import com.carmatch.dto.response.ApiResponse;
 import com.carmatch.dto.response.CarResponse;
 import com.carmatch.dto.response.CarSummaryResponse;
 import com.carmatch.service.CarService;
+import com.carmatch.service.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import com.carmatch.enums.CarType;
 import com.carmatch.enums.FuelType;
 import com.carmatch.enums.TransmissionType;
@@ -28,6 +30,9 @@ public class CarController {
 
     @Autowired
     private CarService carService;
+
+    @Autowired
+    private ImageStorageService imageStorageService;
 
     //  User Endpoints
 
@@ -75,6 +80,16 @@ public class CarController {
         CarResponse car = carService.createCar(request);
         return ResponseEntity.ok(
                 ApiResponse.success("Car created successfully", car));
+    }
+
+    @PostMapping(value = "/api/admin/cars/upload-image", consumes = "multipart/form-data")
+    @Operation(summary = "Upload a car image and get back a URL to use in create/update")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> uploadImage(
+            @RequestParam("file") MultipartFile file) {
+        String url = imageStorageService.store(file);
+        return ResponseEntity.ok(
+                ApiResponse.success("Image uploaded successfully", url));
     }
 
     @PutMapping("/api/admin/cars/{id}")

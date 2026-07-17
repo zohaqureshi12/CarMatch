@@ -160,7 +160,7 @@ public class SuggestionService {
         return result;
     }
 
-    // ── Score a single car against user answers ───────────────────
+    //Score a single car against user answers
     private double calculateScore(Car car, Map<String, String> answers) {
         double score = 0;
 
@@ -213,7 +213,7 @@ public class SuggestionService {
         return score;
     }
 
-    // ── Generate human readable reasoning ────────────────────────
+    // Generate human readable reasoning
     private String generateReasoning(
             Car car, Map<String, String> answers, double score, int rank) {
 

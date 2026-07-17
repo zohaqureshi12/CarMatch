@@ -45,7 +45,7 @@ public class SessionService {
         response.setStartedAt(session.getStartedAt());
         response.setCompletedAt(session.getCompletedAt());
 
-        // Load counts fresh from DB to avoid lazy loading issues
+
         List<UserResponse> responses =
                 userResponseRepository.findBySessionId(session.getId());
         response.setResponseCount(responses.size());
@@ -161,7 +161,7 @@ public class SessionService {
             userResponseRepository.save(response);
         }
 
-        // Reload session fresh from DB
+
         Session updatedSession = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Session not found with id: " + sessionId));

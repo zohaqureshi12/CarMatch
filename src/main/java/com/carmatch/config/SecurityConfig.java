@@ -53,11 +53,17 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(java.util.List.of(
                 "http://localhost:3000",
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "https://speed-reboot-cradle.ngrok-free.dev",
+                "https://carmatch-frontend-bu-1q0v.bolt.host"
         ));
         configuration.setAllowedMethods(java.util.List.of(
                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(java.util.List.of("*"));
+        configuration.setAllowedHeaders(java.util.List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept"
+        ));
         configuration.setAllowCredentials(true);
 
         org.springframework.web.cors.UrlBasedCorsConfigurationSource source =

@@ -31,14 +31,14 @@ public class AdminService {
         return response;
     }
 
-    // ── List All Users (Paginated) ──────────────────────────────
+    // List All Users (Paginated)
     public Page<UserProfileResponse> getAllUsers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return userRepository.findAll(pageable)
                 .map(this::mapToResponse);
     }
 
-    // ── Get Single User Detail ──────────────────────────────────
+    // Get Single User Detail
     public UserProfileResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -46,7 +46,7 @@ public class AdminService {
         return mapToResponse(user);
     }
 
-    // ── Deactivate User ──────────────────────────────────────────
+    //  Deactivate User
     public UserProfileResponse deactivateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -62,7 +62,7 @@ public class AdminService {
         return mapToResponse(user);
     }
 
-    // ── Activate User ────────────────────────────────────────────
+    // Activate User
     public UserProfileResponse activateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(

@@ -24,3 +24,12 @@ springdoc.swagger-ui.path=/swagger-ui.html
 # Jackson date format
 spring.jackson.serialization.write-dates-as-timestamps=false
 spring.mvc.format.date-time=dd-MM-yyyy HH:mm:ss
+
+# Cloudinary
+cloudinary.cloud-name=YOUR_CLOUD_NAME
+cloudinary.api-key=YOUR_API_KEY
+cloudinary.api-secret=YOUR_API_SECRET
+
+# Keep multipart limits — Cloudinary uploads still go through your endpoint first
+spring.servlet.multipart.max-file-size=5MB
+spring.servlet.multipart.max-request-size=5MB
