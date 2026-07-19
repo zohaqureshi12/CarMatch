@@ -17,6 +17,14 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 jwt.secret=YOUR_JWT_SECRET_HERE
 jwt.expiration=86400000
 
+# Mail (Gmail SMTP) — used for OTP verification emails
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=YOUR_GMAIL_ADDRESS
+spring.mail.password=YOUR_GMAIL_APP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+
 # Swagger
 springdoc.api-docs.path=/api-docs
 springdoc.swagger-ui.path=/swagger-ui.html
@@ -25,7 +33,7 @@ springdoc.swagger-ui.path=/swagger-ui.html
 spring.jackson.serialization.write-dates-as-timestamps=false
 spring.mvc.format.date-time=dd-MM-yyyy HH:mm:ss
 
-# Cloudinary
+# Cloudinary — used for car image storage
 cloudinary.cloud-name=YOUR_CLOUD_NAME
 cloudinary.api-key=YOUR_API_KEY
 cloudinary.api-secret=YOUR_API_SECRET
