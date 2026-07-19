@@ -7,6 +7,9 @@ public class AuthResponse {
     private String role;
     private String name;
 
+
+    private String devOtp;
+
     public AuthResponse() {}
 
     public AuthResponse(String token, Long userId, String role, String name) {
@@ -27,4 +30,7 @@ public class AuthResponse {
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getDevOtp() { return devOtp; }
+    public void setDevOtp(String devOtp) { this.devOtp = devOtp; }
 }

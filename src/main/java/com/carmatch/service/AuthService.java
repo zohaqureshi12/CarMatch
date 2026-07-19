@@ -12,6 +12,7 @@ import com.carmatch.repository.UserRepository;
 import com.carmatch.security.CustomUserDetailsService;
 import com.carmatch.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,12 @@ public class AuthService {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    // Defaults to false — only turns on when APP_EXPOSE_OTP_IN_RESPONSE=true
+    // is explicitly set (e.g. temporarily, for a live demo). Off by default
+    // so this never accidentally ships as a security regression.
+    @Value("${app.expose-otp-in-response:false}")
+    private boolean exposeOtpInResponse;
+
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -58,19 +65,26 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Send OTP email
+        // Send OTP email — still attempted every time, runs in the background
+        // (EmailService.sendOtpEmail is @Async), regardless of the flag below.
         emailService.sendOtpEmail(user.getEmail(), otp);
 
         UserDetails userDetails =
                 userDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtUtil.generateToken(userDetails);
 
-        return new AuthResponse(
+        AuthResponse response = new AuthResponse(
                 token,
                 user.getId(),
                 user.getRole().name(),
                 user.getName()
         );
+
+        if (exposeOtpInResponse) {
+            response.setDevOtp(otp);
+        }
+
+        return response;
     }
 
     private String generateOtp() {
