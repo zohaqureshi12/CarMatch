@@ -7,7 +7,11 @@ public class AuthResponse {
     private String role;
     private String name;
 
-
+    // Only populated when app.expose-otp-in-response=true (set via env var).
+    // Lets a demo/interview flow work even if the real OTP email is delayed
+    // or throttled by the receiving mail server (e.g. Gmail rate-limiting a
+    // brand-new sender reputation). The real email still sends in parallel —
+    // this is a fallback, not a replacement.
     private String devOtp;
 
     public AuthResponse() {}

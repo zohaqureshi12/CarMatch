@@ -38,8 +38,9 @@ public class AuthService {
     private CustomUserDetailsService userDetailsService;
 
     // Defaults to false — only turns on when APP_EXPOSE_OTP_IN_RESPONSE=true
-    // is explicitly set (e.g. temporarily, for a live demo). Off by default
-    // so this never accidentally ships as a security regression.
+    // is explicitly set on the server (e.g. temporarily, for a live demo
+    // where real email delivery can't be relied on). Off by default so this
+    // never accidentally ships as a security regression.
     @Value("${app.expose-otp-in-response:false}")
     private boolean exposeOtpInResponse;
 
@@ -91,6 +92,7 @@ public class AuthService {
         int otp = 100000 + new java.util.Random().nextInt(900000);
         return String.valueOf(otp);
     }
+
     public String verifyOtp(VerifyOtpRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -133,6 +135,9 @@ public class AuthService {
 
         emailService.sendOtpEmail(user.getEmail(), otp);
 
+        if (exposeOtpInResponse) {
+            return "OTP resent successfully. Demo code: " + otp;
+        }
         return "OTP resent successfully";
     }
 
