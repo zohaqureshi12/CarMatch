@@ -162,6 +162,12 @@ Full interactive documentation is available via Swagger UI at `/swagger-ui.html`
 
 ---
 
+## Known Limitations (Demo Tradeoffs)
+
+- **Email delivery workaround:** Render's free tier blocks outbound SMTP ports, so email-based OTP delivery (via Brevo) can be unreliable in this environment. A fallback flag (`APP_EXPOSE_OTP_IN_RESPONSE`) exists to return the OTP directly in the registration API response for demo/testing purposes. This is **off by default in production** and should never be enabled in a real deployment — in a production system, OTPs would only ever be delivered via a verified email/SMS channel, never exposed via the API response.
+- **No rate limiting yet:** Auth endpoints (`/api/auth/*`) don't currently have rate limiting. In production this would be added (e.g. via Bucket4j or a Redis-backed limiter) to prevent brute-force or spam registration attempts.
+- **Cold starts:** Both the Render backend and Aiven MySQL database are on free tiers and spin down after inactivity, causing a delay on the first request after idle time. A keep-alive ping (UptimeRobot) mitigates this for demo purposes.
+
 ## Testing
 
 28 unit tests across 5 test classes (JUnit 5 + Mockito), covering `AuthService`, `SessionService`, `SwipeService`, `SuggestionService`, and `RecommendationService` business logic — including edge cases like duplicate swipes, session state transitions, scoring edge cases, and auto-completion at 20 swipes.
