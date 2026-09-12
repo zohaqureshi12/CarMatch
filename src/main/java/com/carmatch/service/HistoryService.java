@@ -137,6 +137,12 @@ public class HistoryService {
 
         return detail;
     }
+    private SuggestionResponse mapToSuggestionResponseForAggregate(Suggestion suggestion) {
+        SuggestionResponse response = mapToSuggestionResponse(suggestion);
+        response.setScore(null);
+        response.setScorePercentage(null);
+        return response;
+    }
 
     // All Suggestions Across All Sessions
     public List<SuggestionResponse> getAllSuggestions() {
@@ -144,16 +150,25 @@ public class HistoryService {
 
         List<Session> userSessions = sessionRepository.findByUserId(user.getId());
 
-        List<SuggestionResponse> allSuggestions = new ArrayList<>();
+        Map<Long, Suggestion> deduped = new LinkedHashMap<>();
 
         for (Session session : userSessions) {
             List<Suggestion> suggestions = suggestionRepository
                     .findBySessionIdOrderByRankPositionAsc(session.getId());
+
             for (Suggestion s : suggestions) {
-                allSuggestions.add(mapToSuggestionResponse(s));
+                Long carId = s.getCar().getId();
+                Suggestion existing = deduped.get(carId);
+
+                if (existing == null || s.getScore() > existing.getScore()) {
+                    deduped.put(carId, s);
+                }
             }
         }
 
-        return allSuggestions;
+        return deduped.values()
+                .stream()
+                .map(this::mapToSuggestionResponseForAggregate)
+                .collect(Collectors.toList());
     }
 }

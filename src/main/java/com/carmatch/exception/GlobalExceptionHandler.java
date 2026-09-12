@@ -93,6 +93,11 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(
                         "This action conflicts with existing data. You may have already performed this action."));
     }
+    @ExceptionHandler(TokenRefreshException.class)
+    public ResponseEntity<ApiResponse<Object>> handleTokenRefresh(TokenRefreshException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Object>> handleGeneric(Exception ex) {
         // Log the real error internally so we can debug it

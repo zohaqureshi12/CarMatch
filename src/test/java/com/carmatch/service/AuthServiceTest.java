@@ -3,6 +3,7 @@ package com.carmatch.service;
 import com.carmatch.dto.request.LoginRequest;
 import com.carmatch.dto.request.RegisterRequest;
 import com.carmatch.dto.response.AuthResponse;
+import com.carmatch.entity.RefreshToken;
 import com.carmatch.entity.User;
 import com.carmatch.enums.Role;
 import com.carmatch.exception.InvalidCredentialsException;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,10 +44,17 @@ class AuthServiceTest {
     @Mock
     private UserDetails userDetails;
 
+    @Mock
+    private EmailService emailService;
+
+    @Mock
+    private RefreshTokenService refreshTokenService;
+
     @InjectMocks
     private AuthService authService;
 
     private User existingUser;
+    private RefreshToken fakeRefreshToken;
 
     @BeforeEach
     void setUp() {
@@ -55,6 +64,10 @@ class AuthServiceTest {
         existingUser.setPassword("hashedPassword123");
         existingUser.setRole(Role.USER);
         existingUser.setIsActive(true);
+        existingUser.setIsEmailVerified(true);
+
+        fakeRefreshToken = new RefreshToken();
+        fakeRefreshToken.setToken("fake-refresh-token");
     }
 
     //  Register Tests
@@ -70,10 +83,13 @@ class AuthServiceTest {
         when(passwordEncoder.encode("password123")).thenReturn("hashedPassword123");
         when(userDetailsService.loadUserByUsername("zoa@gmail.com")).thenReturn(userDetails);
         when(jwtUtil.generateToken(userDetails)).thenReturn("fake-jwt-token");
+        when(refreshTokenService.createRefreshToken(any(User.class)))
+                .thenReturn(fakeRefreshToken);
 
         AuthResponse response = authService.register(request);
 
         assertEquals("fake-jwt-token", response.getToken());
+        assertEquals("fake-refresh-token", response.getRefreshToken());
         assertEquals("Zoa", response.getName());
         assertEquals("USER", response.getRole());
         verify(userRepository, times(1)).save(any(User.class));
@@ -91,7 +107,6 @@ class AuthServiceTest {
         assertThrows(UserAlreadyExistsException.class,
                 () -> authService.register(request));
 
-        // Should never attempt to save if email already exists
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -110,10 +125,13 @@ class AuthServiceTest {
         when(userDetailsService.loadUserByUsername("zoa@gmail.com"))
                 .thenReturn(userDetails);
         when(jwtUtil.generateToken(userDetails)).thenReturn("fake-jwt-token");
+        when(refreshTokenService.createRefreshToken(any(User.class)))
+                .thenReturn(fakeRefreshToken);
 
         AuthResponse response = authService.login(request);
 
         assertEquals("fake-jwt-token", response.getToken());
+        assertEquals("fake-refresh-token", response.getRefreshToken());
         assertEquals("Zoa", response.getName());
     }
 

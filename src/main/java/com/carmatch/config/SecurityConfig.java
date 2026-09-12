@@ -63,7 +63,8 @@ public class SecurityConfig {
                 "Content-Type",
                 "Accept"
         ));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(true); //needed to send the Authorization header
+        //  browsers disallow combining wildcard origins with credentials.
 
         org.springframework.web.cors.UrlBasedCorsConfigurationSource source =
                 new org.springframework.web.cors.UrlBasedCorsConfigurationSource();

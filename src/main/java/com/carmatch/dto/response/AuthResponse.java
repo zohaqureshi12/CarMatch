@@ -37,4 +37,9 @@ public class AuthResponse {
 
     public String getDevOtp() { return devOtp; }
     public void setDevOtp(String devOtp) { this.devOtp = devOtp; }
+
+    private String refreshToken;
+
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
 }

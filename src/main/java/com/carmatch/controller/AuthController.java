@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.carmatch.dto.request.ResendOtpRequest;
 import com.carmatch.dto.request.VerifyOtpRequest;
+import com.carmatch.dto.request.RefreshTokenRequest;
+import com.carmatch.dto.response.RefreshTokenResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -59,5 +61,24 @@ public class AuthController {
         String message = authService.resendOtp(request);
         return ResponseEntity.ok(
                 ApiResponse.success(message, null));
+    }
+    @PostMapping("/refresh")
+    @Operation(summary = "Exchange a refresh token for a new access token")
+    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+
+        RefreshTokenResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Token refreshed successfully", response));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Log out and revoke this device's refresh token")
+    public ResponseEntity<ApiResponse<String>> logout(
+            @Valid @RequestBody RefreshTokenRequest request) {
+
+        authService.logout(request);
+        return ResponseEntity.ok(
+                ApiResponse.success("Logged out successfully", null));
     }
 }

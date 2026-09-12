@@ -42,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
             final String email = jwtUtil.extractEmail(token);
 
             if (email != null &&
-                    SecurityContextHolder.getContext().getAuthentication() == null) {
+                    SecurityContextHolder.getContext().getAuthentication() == null) {  // avoids redoing this if somehow already set earlier in the chain
 
                 UserDetails userDetails =
                         userDetailsService.loadUserByUsername(email);
