@@ -1,0 +1,7 @@
+target/
+.git/
+.idea/
+*.iml
+.env
+# Without this line your DB password and JWT secret would be baked into the jar
+src/main/resources/application.properties

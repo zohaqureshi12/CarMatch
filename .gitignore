@@ -33,3 +33,7 @@ build/
 .vscode/
 
 application.properties
+
+### Secrets for Docker Compose ###
+.env
+docker-compose.yaml
