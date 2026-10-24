@@ -18,14 +18,15 @@ Live deployment:
 |---|---|
 | Language | Java 21 |
 | Framework | Spring Boot 3.2.5 |
-| Database | MySQL 8 (hosted on Aiven, SSL required) |
+| Database | MySQL 8 (Aiven in production; local Docker/MySQL Workbench for development) |
 | ORM | Spring Data JPA / Hibernate |
 | Auth | Spring Security 6 + JWT (jjwt 0.12.3) |
-| Email | Brevo HTTP API (OTP verification) |
+| Email | Brevo HTTP API in production; Gmail SMTP for local development |
 | Image hosting | Cloudinary |
 | API docs | springdoc-openapi (Swagger UI) |
 | Testing | JUnit 5 + Mockito |
 | Backend hosting | Render (Docker multi-stage build) |
+| Local dev | Docker Compose (app + MySQL + Redis) |
 | Frontend | React (single-file app, built via Antigravity AI agent) |
 | Frontend hosting | Vercel |
 
@@ -115,6 +116,7 @@ erDiagram
 ## Core Features
 
 - **Auth:** Register/login with JWT, email OTP verification (10-minute expiry), resend OTP, BCrypt password hashing
+- **Rate limiting:** Auth endpoints are protected against brute-force and spam requests
 - **Questionnaire:** 6 fixed preference questions (budget, fuel type, car type, seating, usage, transmission)
 - **Swipe sessions:** LIKE/PASS per car, duplicate-swipe protection, auto-completes at 20 swipes
 - **Recommendation engine:** Weighted scoring out of 115 points (budget 30, fuel type 25, car type 20, seating 15, usage 10, transmission 10, recency bonus 5)
@@ -127,6 +129,25 @@ erDiagram
 ---
 
 ## Getting Started (Local Development)
+
+### Option A: Docker Compose (recommended)
+
+Runs the app, MySQL and Redis together with one command — no local Java/Maven/MySQL setup required.
+
+1. Copy the compose template and fill in your own values:
+   ```bash
+   cp docker-compose.yaml.example docker-compose.yaml
+   ```
+2. Create a `.env` file in the project root with your secrets (JWT secret, MySQL root password, mail credentials, Cloudinary keys) — see `docker-compose.yaml.example` for the full list of required variables.
+3. Build and start everything:
+   ```bash
+   docker compose up -d --build
+   ```
+4. API available at `http://localhost:8080`. Swagger UI at `http://localhost:8080/swagger-ui.html`.
+
+> Note: this spins up a fresh, empty MySQL instance inside Docker — separate from any local MySQL Workbench or Aiven database you may already have.
+
+### Option B: Run directly with Maven
 
 1. Clone the repo and copy the properties template:
    ```bash
@@ -165,7 +186,6 @@ Full interactive documentation is available via Swagger UI at `/swagger-ui.html`
 ## Known Limitations (Demo Tradeoffs)
 
 - **Email delivery workaround:** Render's free tier blocks outbound SMTP ports, so email-based OTP delivery (via Brevo) can be unreliable in this environment. A fallback flag (`APP_EXPOSE_OTP_IN_RESPONSE`) exists to return the OTP directly in the registration API response for demo/testing purposes. This is **off by default in production** and should never be enabled in a real deployment — in a production system, OTPs would only ever be delivered via a verified email/SMS channel, never exposed via the API response.
-- **No rate limiting yet:** Auth endpoints (`/api/auth/*`) don't currently have rate limiting. In production this would be added (e.g. via Bucket4j or a Redis-backed limiter) to prevent brute-force or spam registration attempts.
 - **Cold starts:** Both the Render backend and Aiven MySQL database are on free tiers and spin down after inactivity, causing a delay on the first request after idle time. A keep-alive ping (UptimeRobot) mitigates this for demo purposes.
 
 ## Testing
